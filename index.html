@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body { 
+            background-color: #e9ecef; 
+            font-family: 'Arial', sans-serif; 
+        }
+        .card { 
+            border-radius: 15px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+        }
+        #chat-messages { 
+            height: 400px; 
+            overflow-y: auto; 
+            padding: 15px; 
+            border-radius: 15px; 
+            background: #ffffff; 
+            border: 1px solid #dee2e6; 
+        }
+        .message { 
+            padding: 12px; 
+            margin: 5px 0; 
+            border-radius: 15px; 
+            transition: background-color 0.3s; 
+        }
+        .user-message { 
+            background-color: #d4edda; 
+            text-align: right; 
+        }
+        .other-message { 
+            background-color: #f8d7da; 
+            text-align: left; 
+        }
+        .btn { 
+            transition: background-color 0.3s; 
+        }
+        .btn:hover { 
+            background-color: #0056b3; 
+        }
+        .invalid-feedback { 
+            display: block; 
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Popup -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Fetching messages...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <!-- Login Form -->
+        <div id="login-container" class="card p-4 shadow-lg">
+            <h2 class="text-center">Login</h2>
+            <input type="email" id="login-email" class="form-control my-2" placeholder="Email">
+            <input type="password" id="login-password" class="form-control my-2" placeholder="Password">
+            <button id="login-btn" class="btn btn-primary w-100" onclick="login()">Login</button>
+            <p class="text-center mt-2">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-container" class="card p-4 shadow-lg d-none">
+            <h2 class="text-center">Register</h2>
+            <input type="text" id="register-username" class="form-control my-2" placeholder="Username">
+            <input type="email" id="register-email" class="form-control my-2" placeholder="Email">
+            <input type="password" id="register-password" class="form-control my-2" placeholder="Password">
+            <button id="register-btn" class="btn btn-success w-100" onclick="register()">Register</button>
+            <p class="text-center mt-2">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+        </div>
+
+        <!-- Chat Box -->
+        <div id="chat-container" class="card p-4 shadow-lg d-none">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Live Chat</h2>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+            <div id="chat-messages"></div>
+            <div class="input-group mt-3">
+                <input type="text" id="message-input" class="form-control" placeholder="Type a message...">
+                <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = "https://script.google.com/macros/s/AKfycbxJilNYQ-9lOxoEjy6mvM6-VQk-5tDGerAFXjABSa-k4Ik51QxWI3yyCKSBF6azJ3BKDA/exec";
+        let currentUser  = null;
+        let currentUsername = null;
+        let loadingDisplayed = false;
+
+        function showRegister() {
+            $("#login-container").addClass("d-none");
+            $("#register-container").removeClass("d-none");
+            gsap.from("#register-container", { opacity: 0, y: -50, duration: 1 });
+        }
+
+        function showLogin() {
+            $("#register-container").addClass("d-none");
+            $("#login-container").removeClass("d-none");
+            gsap.from("#login-container", { opacity: 0, y: -50, duration: 1 });
+        }
+
+        function login() {
+            const email = $("#login-email").val().trim();
+            const password = $("#login-password").val().trim();
+
+            if (!email) {
+                alert("Email is required");
+                return;
+            }
+            if (!password) {
+                alert("Password is required");
+                return;
+            }
+
+            $("#login-btn").prop("disabled", true).html("Logging in...");
+
+            $.post(apiUrl, { action: "login", email, password }, function(response) {
+                if (response.success) {
+                    currentUser  = email;
+                    currentUsername = response.username;
+                    $("#login-container").addClass("d-none");
+                    $("#chat-container").removeClass("d-none");
+                    startMessagePolling();
+                } else {
+                    alert("Login failed!");
+                }
+            }, "json").always(() => {
+                $("#login-btn").prop("disabled", false).html("Login");
+            });
+        }
+
+        function register() {
+            const email = $("#register-email").val().trim();
+            const password = $("#register-password").val().trim();
+            const username = $("#register-username").val().trim();
+
+            if (!email || !password || !username) {
+                alert("All fields are required!");
+                return;
+            }
+
+            $("#register-btn").prop("disabled", true).html("Registering...");
+
+            $.post(apiUrl, { action: "register", username, email, password }, function(response) {
+                if (response.success) {
+                    alert("Registered successfully!");
+                    showLogin();
+                } else {
+                    alert("Registration failed!");
+                }
+            }, "json").always(() => {
+                $("#register-btn").prop("disabled", false).html("Register");
+            });
+        }
+
+        function sendMessage() {
+            const message = $("#message-input").val().trim();
+            if (!message) return;
+
+            $("#send-btn").prop("disabled", true).html("Sending...");
+
+            const messageElement = $(`
+                <div class='message user-message'>
+                    <strong>${currentUsername}</strong>: ${message}
+                </div>
+            `).hide().appendTo("#chat-messages").fadeIn(300);
+
+            $("#message-input").val("");
+            $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+
+            $.post(apiUrl, { action: "sendMessage", username: currentUsername, message }, function() {
+                $("#send-btn").prop("disabled", false).html("Send");
+            });
+        }
+
+        function startMessagePolling() {
+            if (!loadingDisplayed) {
+                $("#loadingModal").modal("show");
+                setTimeout(() => $("#loadingModal").modal("hide"), 2100);
+                loadingDisplayed = true;
+            }
+            setInterval(loadMessages, 3000);
+            loadMessages();
+        }
+
+        function loadMessages() {
+            $.get(apiUrl + "?action=getMessages", function(response) {
+                $("#chat-messages").html(response.messages.map(msg => 
+                    `<div class='message ${msg.sender === currentUsername ? "user-message" : "other-message"}'>
+                        <strong>${msg.sender}</strong>: ${msg.text}
+                    </div>`).join("")
+                );
+                $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+            }, "json");
+        }
+
+        function logout() {
+            location.reload();
+        }
+    </script>
+
+</body>
+</html>

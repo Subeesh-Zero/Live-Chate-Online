@@ -11,27 +11,12 @@
     <style>
         body { background-color: #e9ecef; font-family: 'Arial', sans-serif; }
         .card { border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
-        #chat-messages { 
-            min-height: 700px; /* Set minimum height to 700px */
-            max-height: 80vh; /* Prevent it from becoming too tall */
-            overflow-y: auto;
-            padding: 15px;
-            border-radius: 15px;
-            background: #ffffff;
-            border: 1px solid #dee2e6;
-            position: relative; /* Added for button positioning */
-        }
-        .message { padding: 12px; margin: 5px 0; border-radius: 9px; transition: background-color 0.3s; }
+        #chat-messages { height: 600px; overflow-y: auto; padding: 15px; border-radius: 15px; background: #ffffff; border: 1px solid #dee2e6; }
+        .message { padding: 12px; margin: 5px 0; border-radius: 15px; transition: background-color 0.3s; }
         .user-message { background-color: #d4edda; text-align: right; }
         .other-message { background-color: #f8d7da; text-align: left; }
         .btn { transition: background-color 0.3s; }
         .btn:hover { background-color: #0056b3; }
-        #scroll-to-bottom-btn {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            z-index: 1000; /* Ensure it appears above other elements */
-        }
     </style>
 </head>
 <body>
@@ -40,8 +25,8 @@
         <!-- Login Form -->
         <div id="login-container" class="card p-4 shadow-lg">
             <h2 class="text-center">Login</h2>
-            <input type="email" id="login-email" class="form-control my-2" placeholder="Email" required>
-            <input type="password" id="login-password" class="form-control my-2" placeholder="Password" required>
+            <input type="email" id="login-email" class="form-control my-2" placeholder="Email">
+            <input type="password" id="login-password" class="form-control my-2" placeholder="Password">
             <button id="login-btn" class="btn btn-primary w-100" onclick="login()">Login</button>
             <p class="text-center mt-2">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
         </div>
@@ -49,9 +34,9 @@
         <!-- Register Form -->
         <div id="register-container" class="card p-4 shadow-lg d-none">
             <h2 class="text-center">Register</h2>
-            <input type="text" id="register-username" class="form-control my-2" placeholder="Username" required>
-            <input type="email" id="register-email" class="form-control my-2" placeholder="Email" required>
-            <input type="password" id="register-password" class="form-control my-2" placeholder="Password" required>
+            <input type="text" id="register-username" class="form-control my-2" placeholder="Username">
+            <input type="email" id="register-email" class="form-control my-2" placeholder="Email">
+            <input type="password" id="register-password" class="form-control my-2" placeholder="Password">
             <button id="register-btn" class="btn btn-success w-100" onclick="registerUser ()">Register</button>
             <p class="text-center mt-2">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
         </div>
@@ -62,12 +47,9 @@
                 <h2>Live Chat</h2>
                 <button class="btn btn-danger" onclick="logout()">Logout</button>
             </div>
-            <div id="chat-messages">
-                <!-- Chat messages will be appended here -->
-            </div>
-            <button id="scroll-to -bottom-btn" class="btn btn-secondary d-none" onclick="scrollToBottom()">Scroll to Bottom</button>
+            <div id="chat-messages"></div>
             <div class="input-group mt-3">
-                <input type="text" id="message-input" class="form-control" placeholder="Type a message..." required>
+                <input type="text" id="message-input" class="form-control" placeholder="Type a message...">
                 <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">Send</button>
             </div>
         </div>
@@ -88,7 +70,7 @@
     </div>
 
     <script>
-        const apiUrl = "https://script.google.com/macros/s/AKfycbyfcaOXJMrEXYxQtgISl9ZxfYh13uDCfezek1XQj7GO3dbMHk5rV1lQFgbAYrk1LzE_xQ/exec";
+ const apiUrl = "https://script.google.com/macros/s/AKfycbyfcaOXJMrEXYxQtgISl9ZxfYh13uDCfezek1XQj7GO3dbMHk5rV1lQFgbAYrk1LzE_xQ/exec";
         let currentUsername = "";
 
         function showRegister() {
@@ -111,7 +93,7 @@
             }
 
             $("#login-btn").prop("disabled", true).text("Logging in...");
-            $("#loadingModal").modal("show");
+            $("#loadingModal").modal("show"); // Show loading modal
 
             $.post(apiUrl, { action: "login", email, password }, function(response) {
                 if (response.success) {
@@ -120,11 +102,11 @@
                     $("#chat-container").removeClass("d-none");
                     startMessagePolling();
                     setTimeout(() => {
-                        $("#loadingModal").modal("hide");
+                        $("#loadingModal").modal("hide"); // Hide loading modal after 5 seconds
                     }, 5000);
                 } else {
                     alert("Login failed!");
-                    $("#loadingModal").modal("hide");
+                    $("#loadingModal").modal("hide"); // Hide loading modal immediately
                 }
             }, "json").always(() => {
                 $("#login-btn").prop("disabled", false).text("Login");
@@ -172,8 +154,8 @@
         function loadMessages() {
             $.get(apiUrl + "?action=getMessages", function(response) {
                 if (!response.messages) return;
-
-                let chatBox = $("#chat-messages");
+                
+               let chatBox = $("#chat-messages");
                 let shouldScroll = chatBox[0].scrollHeight - chatBox[0].scrollTop === chatBox[0].clientHeight;
                 chatBox.empty();
 
@@ -186,8 +168,6 @@
 
                 if (shouldScroll) {
                     chatBox.scrollTop(chatBox[0].scrollHeight);
-                } else {
-                    $("#scroll-to-bottom-btn").removeClass(" d-none").fadeIn();
                 }
             }, "json").fail(() => {
                 console.error("Error fetching messages!");
@@ -198,12 +178,6 @@
             setInterval(loadMessages, 3000);
         }
 
-        function scrollToBottom() {
-            let chatBox = $("#chat-messages");
-            chatBox.scrollTop(chatBox[0].scrollHeight);
-            $("#scroll-to-bottom-btn").fadeOut();
-        }
-
         function logout() {
             location.reload();
         }
@@ -211,3 +185,4 @@
 
 </body>
 </html>
+

@@ -9,83 +9,207 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        body { background-color: #e9ecef; font-family: 'Arial', sans-serif; }
-        .card { border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        /* General Styles */
+        body { 
+            background: linear-gradient(135deg, #667eea, #764ba2); /* Gradient background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card { 
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow */
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            margin: 1rem;
+        }
+        .card h2 {
+            color: #333; /* Dark text for headings */
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .form-control {
+            border-radius: 25px; /* Rounded input fields */
+            padding: 10px 20px;
+            border: 1px solid #ddd; /* Light border */
+            margin-bottom: 1rem;
+        }
+        .form-control:focus {
+            border-color: #667eea; /* Highlight border on focus */
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); /* Focus shadow */
+        }
+        .btn-primary, .btn-success {
+            border-radius: 25px; /* Rounded buttons */
+            padding: 10px 20px;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #667eea; /* Primary button color */
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #5a6fd1; /* Darker on hover */
+        }
+        .btn-success {
+            background-color: #28a745; /* Success button color */
+            border: none;
+        }
+        .btn-success:hover {
+            background-color: #218838; /* Darker on hover */
+        }
+        .text-center a {
+            color: #667eea; /* Link color */
+            text-decoration: none;
+        }
+        .text-center a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+
+        /* Chat Container Styles */
+        #chat-container { 
+            max-width: 100%; /* Full width */
+            margin: 0; /* Remove margin */
+            padding: 0; 
+            height: 100vh; /* Full height */
+        }
         #chat-messages { 
-            height: 600px; 
+            height: calc(100vh - 120px); /* Responsive height */
             overflow-y: auto; 
-            padding: 15px; 
-            border-radius: 15px; 
-            background: #ffffff; 
-            border: 1px solid #dee2e6; 
+            padding: 15px 15px 80px; /* Add padding at the bottom to avoid input box overlap */
+            background-color: #ece5dd; /* WhatsApp chat background */
             scroll-behavior: smooth; 
             position: relative; 
         }
-        .message { padding: 12px; margin: 5px 0; border-radius: 15px; transition: background-color 0.3s; }
-        .user-message { background-color: #d4edda; text-align: right; }
-        .other-message { background-color: #f8d7da; text-align: left; }
-        .btn { transition: background-color 0.3s; }
-        .btn:hover { background-color: #0056b3; }
-        #scroll-down-button { 
-         position: fixed; 
-         bottom: 100px; 
-         right: 30px;  /* Changed from 'right' to 'left' */
-         background-color: #007bff; 
-         color: white; 
-         border-radius: 50%; 
-         width: 40px; 
-         height: 40px; 
-         display: flex; 
-         align-items: center; 
-         justify-content: center; 
-         cursor: pointer; 
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-         opacity: 0; 
-         transition: opacity 0.3s, transform 0.3s; 
-         z-index: 1000; 
-         }
-        #scroll-down-button.visible { opacity: 1; }
-        #scroll-down-button:hover { transform: scale(1.1); }
+        .message { 
+            padding: 8px 12px; 
+            margin: 5px 0; 
+            border-radius: 8px; 
+            max-width: 70%; 
+            word-wrap: break-word; 
+            position: relative; 
+        }
+        .user-message { 
+            background-color: #dcf8c6; /* WhatsApp user message color */
+            margin-left: auto; 
+            text-align: right; 
+        }
+        .other-message { 
+            background-color: #fff; /* WhatsApp other message color */
+            margin-right: auto; 
+            text-align: left; 
+        }
+        .message-time {
+            font-size: 0.75rem; 
+            color: #666; 
+            margin-top: 4px; 
+            display: block; 
+        }
+        .message-username {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .input-group { 
+            background-color: #fff; 
+            padding: 10px; 
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-top: 1px solid #ddd; /* Add a border at the top */
+        }
+        #message-input { 
+            border: none; 
+            border-radius: 25px; 
+            padding: 10px 20px; 
+            background-color: #f1f1f1; 
+            width: calc(100% - 100px); /* Responsive input width */
+        }
+        #send-btn { 
+            border: none; 
+            border-radius: 50%; 
+            background-color: #25d366; /* WhatsApp send button color */
+            color: white; 
+            width: 40px; 
+            height: 40px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+        }
+        #send-btn:disabled { 
+            background-color: #ccc; /* Disabled button color */
+            cursor: not-allowed; 
+        }
+        #send-btn:hover:not(:disabled) { 
+            background-color: #128c7e; /* Darker green on hover */
+        }
+        @media (max-width: 768px) {
+            #chat-messages {
+                height: calc(100vh - 100px); /* Adjust height for smaller screens */
+                padding-bottom: 70px; /* Adjust padding for smaller screens */
+            }
+            #message-input {
+                width: calc(100% - 90px); /* Adjust input width for smaller screens */
+            }
+            #send-btn {
+                width: 40px; /* Adjust button width for smaller screens */
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container mt-5">
+    <div class="container-fluid">
         <!-- Login Form -->
-        <div id="login-container" class="card p-4 shadow-lg">
-            <h2 class="text-center">Login</h2>
-            <input type="email" id="login-email" class="form-control my-2" placeholder="Email">
-            <input type="password" id="login-password" class="form-control my-2" placeholder="Password">
-            <button id="login-btn" class="btn btn-primary w-100" onclick="login()">Login</button>
-            <p class="text-center mt-2">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+        <div id="login-container" class="card">
+            <h2>Login</h2>
+            <input type="email" id="login-email" class="form-control" placeholder="Email">
+            <input type="password" id="login-password" class="form-control" placeholder="Password">
+            <button id="login-btn" class="btn btn-primary" onclick="login()">Login</button>
+            <p class="text-center mt-3">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
         </div>
 
         <!-- Register Form -->
-        <div id="register-container" class="card p-4 shadow-lg d-none">
-            <h2 class="text-center">Register</h2>
-            <input type="text" id="register-username" class="form-control my-2" placeholder="Username">
-            <input type="email" id="register-email" class="form-control my-2" placeholder="Email">
-            <input type="password" id="register-password" class="form-control my-2" placeholder="Password">
-            <button id="register-btn" class="btn btn-success w-100" onclick="registerUser()">Register</button>
-            <p class="text-center mt-2">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+        <div id="register-container" class="card d-none">
+            <h2>Register</h2>
+            <input type="text" id="register-username" class="form-control" placeholder="Username">
+            <input type="email" id="register-email" class="form-control" placeholder="Email">
+            <input type="password" id="register-password" class="form-control" placeholder="Password">
+            <button id="register-btn" class="btn btn-success" onclick="registerUser()">Register</button>
+            <p class="text-center mt-3">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
         </div>
 
         <!-- Chat Box -->
         <div id="chat-container" class="card p-4 shadow-lg d-none">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2>Live Chat</h2>
                 <button class="btn btn-danger" onclick="logout()">Logout</button>
             </div>
             <div id="chat-messages">
-                <!-- Messages will be loaded here -->
+                <div id="loading-message" class="text-center mt-3">
+                    <p>Please wait, your chat is loading...</p>
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
             </div>
-            <!-- Scroll-down button -->
-            <div id="scroll-down-button" onclick="scrollToBottom()">
-                <i class="fas fa-arrow-down"></i>
-            </div>
-            <div class="input-group mt-3">
+            <div class="input-group">
                 <input type="text" id="message-input" class="form-control" placeholder="Type a message...">
-                <button id="send-btn" class="btn btn-primary" onclick="sendMessage()">Send</button>
+                <button id="send-btn" class="btn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i> <!-- Send icon -->
+                </button>
             </div>
         </div>
     </div>
@@ -107,7 +231,24 @@
     <script>
         const apiUrl = "https://script.google.com/macros/s/AKfycbyfcaOXJMrEXYxQtgISl9ZxfYh13uDCfezek1XQj7GO3dbMHk5rV1lQFgbAYrk1LzE_xQ/exec";
         let currentUsername = "";
-        let lastMessageCount = 0; // Track the number of messages to detect new ones
+        let lastSender = ""; // Track the last sender to hide the username for consecutive messages
+
+        $(document).ready(function() {
+            // Check if the user is already logged in
+            const loggedIn = localStorage.getItem("loggedIn");
+            const username = localStorage.getItem("username");
+
+            if (loggedIn === "true" && username) {
+                currentUsername = username;
+                $("#login-container").addClass("d-none");
+                $("#chat-container").removeClass("d-none");
+
+                // Show the loading message in the chat box
+                $("#loading-message").show();
+
+                startMessagePolling();
+            }
+        });
 
         function showRegister() {
             $("#login-container").addClass("d-none");
@@ -134,8 +275,17 @@
             $.post(apiUrl, { action: "login", email, password }, function(response) {
                 if (response.success) {
                     currentUsername = response.username;
+
+                    // Store login state in localStorage
+                    localStorage.setItem("loggedIn", "true");
+                    localStorage.setItem("username", currentUsername);
+
                     $("#login-container").addClass("d-none");
                     $("#chat-container").removeClass("d-none");
+
+                    // Show the loading message in the chat box
+                    $("#loading-message").show();
+
                     startMessagePolling();
                     setTimeout(() => {
                         $("#loadingModal").modal("hide"); // Hide loading modal after 5 seconds
@@ -177,14 +327,22 @@
             const message = $("#message-input").val().trim();
             if (!message) return;
 
-            $("#send-btn").prop("disabled", true).text("Sending...");
+            // Disable input and send button
+            $("#message-input").prop("disabled", true);
+            $("#send-btn").prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i>'); // Show loading spinner
 
             $.post(apiUrl, { action: "sendMessage", username: currentUsername, message }, function() {
-                $("#send-btn").prop("disabled", false).text("Send");
+                // Re-enable input and send button
+                $("#message-input").prop("disabled", false);
+                $("#send-btn").prop("disabled", false).html('<i class="fas fa-paper-plane"></i>'); // Re-enable send button
+                $("#message-input").val(""); // Clear the input field
                 loadMessages(true); // Force scroll to bottom for sent messages
+            }).fail(() => {
+                // Re-enable input and send button on failure
+                $("#message-input").prop("disabled", false);
+                $("#send-btn").prop("disabled", false).html('<i class="fas fa-paper-plane"></i>'); // Re-enable send button
+                alert("Failed to send message. Please try again.");
             });
-
-            $("#message-input").val("");
         }
 
         function loadMessages(forceScroll = false) {
@@ -194,24 +352,28 @@
                 let chatBox = $("#chat-messages");
                 let isAtBottom = chatBox[0].scrollHeight - chatBox[0].scrollTop === chatBox[0].clientHeight;
 
-                // Check if new messages are received
-                if (response.messages.length > lastMessageCount) {
-                    lastMessageCount = response.messages.length; // Update message count
-
-                    // Show the scroll-down button if not at the bottom
-                    if (!isAtBottom && !forceScroll) {
-                        $("#scroll-down-button").addClass("visible");
-                    }
-                }
+                // Hide the loading message
+                $("#loading-message").hide();
 
                 chatBox.empty(); // Clear the chat box before appending new messages
 
                 // Append each message to the chat box
-                response.messages.forEach(msg => {
+                response.messages.forEach((msg, index) => {
                     let msgClass = msg.sender === currentUsername ? "user-message" : "other-message";
                     let messageText = msg.text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+                    let messageTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                    chatBox.append(`<div class="message ${msgClass}"><strong>${msg.sender}:</strong> ${messageText}</div>`);
+                    // Check if the current sender is the same as the previous sender
+                    let showUsername = msg.sender !== lastSender;
+                    lastSender = msg.sender; // Update the last sender
+
+                    chatBox.append(`
+                        <div class="message ${msgClass}">
+                            ${showUsername ? `<div class="message-username">${msg.sender}</div>` : ''}
+                            <div>${messageText}</div>
+                            <span class="message-time">${messageTime}</span>
+                        </div>
+                    `);
                 });
 
                 // Scroll to bottom if it's a sent message or if the user is already at the bottom
@@ -220,13 +382,14 @@
                 }
             }, "json").fail(() => {
                 console.error("Error fetching messages!");
+                // Show an error message if loading fails
+                $("#loading-message").html("<p class='text-danger'>Failed to load messages. Please try again.</p>");
             });
         }
 
         function scrollToBottom() {
             let chatBox = $("#chat-messages");
             chatBox.scrollTop(chatBox[0].scrollHeight);
-            $("#scroll-down-button").removeClass("visible"); // Hide the scroll-down button
         }
 
         function startMessagePolling() {
@@ -234,7 +397,12 @@
         }
 
         function logout() {
-            location.reload(); // Reload the page to log out
+            // Clear login state from localStorage
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("username");
+
+            // Reload the page to reset the app
+            location.reload();
         }
     </script>
 

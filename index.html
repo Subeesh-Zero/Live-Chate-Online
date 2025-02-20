@@ -11,30 +11,41 @@
     <style>
         body { background-color: #e9ecef; font-family: 'Arial', sans-serif; }
         .card { border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
-        #chat-messages { height: 600px; overflow-y: auto; padding: 15px; border-radius: 15px; background: #ffffff; border: 1px solid #dee2e6; scroll-behavior: smooth; position: relative; }
+        #chat-messages { 
+            height: 600px; 
+            overflow-y: auto; 
+            padding: 15px; 
+            border-radius: 15px; 
+            background: #ffffff; 
+            border: 1px solid #dee2e6; 
+            scroll-behavior: smooth; 
+            position: relative; 
+        }
         .message { padding: 12px; margin: 5px 0; border-radius: 15px; transition: background-color 0.3s; }
         .user-message { background-color: #d4edda; text-align: right; }
         .other-message { background-color: #f8d7da; text-align: left; }
         .btn { transition: background-color 0.3s; }
         .btn:hover { background-color: #0056b3; }
         #scroll-down-button { 
-            position: absolute; 
-            bottom: 20px; 
-            right: 20px; 
-            background-color: #007bff; 
-            color: white; 
-            border-radius: 50%; 
-            width: 40px; 
-            height: 40px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-            opacity: 0; 
-            transition: opacity 0.3s; 
-        }
+         position: fixed; 
+         bottom: 100px; 
+         right: 30px;  /* Changed from 'right' to 'left' */
+         background-color: #007bff; 
+         color: white; 
+         border-radius: 50%; 
+         width: 40px; 
+         height: 40px; 
+         display: flex; 
+         align-items: center; 
+         justify-content: center; 
+         cursor: pointer; 
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+         opacity: 0; 
+         transition: opacity 0.3s, transform 0.3s; 
+         z-index: 1000; 
+         }
         #scroll-down-button.visible { opacity: 1; }
+        #scroll-down-button:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -66,10 +77,11 @@
                 <button class="btn btn-danger" onclick="logout()">Logout</button>
             </div>
             <div id="chat-messages">
-                <!-- Scroll-down button -->
-                <div id="scroll-down-button" onclick="scrollToBottom()">
-                    <i class="fas fa-arrow-down"></i>
-                </div>
+                <!-- Messages will be loaded here -->
+            </div>
+            <!-- Scroll-down button -->
+            <div id="scroll-down-button" onclick="scrollToBottom()">
+                <i class="fas fa-arrow-down"></i>
             </div>
             <div class="input-group mt-3">
                 <input type="text" id="message-input" class="form-control" placeholder="Type a message...">
@@ -95,6 +107,7 @@
     <script>
         const apiUrl = "https://script.google.com/macros/s/AKfycbyfcaOXJMrEXYxQtgISl9ZxfYh13uDCfezek1XQj7GO3dbMHk5rV1lQFgbAYrk1LzE_xQ/exec";
         let currentUsername = "";
+        let lastMessageCount = 0; // Track the number of messages to detect new ones
 
         function showRegister() {
             $("#login-container").addClass("d-none");
@@ -177,9 +190,19 @@
         function loadMessages(forceScroll = false) {
             $.get(apiUrl + "?action=getMessages", function(response) {
                 if (!response.messages) return;
-                
+
                 let chatBox = $("#chat-messages");
                 let isAtBottom = chatBox[0].scrollHeight - chatBox[0].scrollTop === chatBox[0].clientHeight;
+
+                // Check if new messages are received
+                if (response.messages.length > lastMessageCount) {
+                    lastMessageCount = response.messages.length; // Update message count
+
+                    // Show the scroll-down button if not at the bottom
+                    if (!isAtBottom && !forceScroll) {
+                        $("#scroll-down-button").addClass("visible");
+                    }
+                }
 
                 chatBox.empty(); // Clear the chat box before appending new messages
 
@@ -194,9 +217,6 @@
                 // Scroll to bottom if it's a sent message or if the user is already at the bottom
                 if (forceScroll || isAtBottom) {
                     scrollToBottom();
-                } else {
-                    // Show the scroll-down button if not at the bottom
-                    $("#scroll-down-button").addClass("visible");
                 }
             }, "json").fail(() => {
                 console.error("Error fetching messages!");

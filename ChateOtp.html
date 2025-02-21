@@ -187,6 +187,7 @@
             <input type="text" id="register-username" class="form-control" placeholder="Username">
             <input type="email" id="register-email" class="form-control" placeholder="Email">
             <input type="password" id="register-password" class="form-control" placeholder="Password">
+            <input type="password" id="register-confirm-password" class="form-control" placeholder="Confirm Password">
             <div class="input-group mt-2">
                 <input type="text" id="otp-input" class="form-control" placeholder="Enter OTP" disabled>
                 <button id="send-otp-btn" class="btn btn-primary" onclick="sendOTP()">Send OTP</button>
@@ -248,6 +249,7 @@
                         <button id="send-forgot-otp-btn" class="btn btn-primary" onclick="sendForgotOTP()">Send OTP</button>
                     </div>
                     <input type="password" id="new-password" class="form-control mb-3" placeholder="New Password" disabled>
+                    <input type="password" id="confirm-new-password" class="form-control mb-3" placeholder="Confirm New Password" disabled>
                     <button id="reset-password-btn" class="btn btn-success w-100" onclick="resetPassword()" disabled>Reset Password</button>
                 </div>
             </div>
@@ -260,6 +262,8 @@
         let lastSender = ""; // Track the last sender to hide the username for consecutive messages
         let otpCountdownInterval; // Variable to store the countdown interval
         let otpCountdownTime = 60; // Countdown time in seconds
+        let forgotPasswordOTPCountdownInterval; // Variable for forgot password OTP countdown
+        let forgotPasswordOTPCountdownTime = 60; // Countdown time in seconds
 
         $(document).ready(function() {
             // Check if the user is already logged in
@@ -312,6 +316,30 @@
             }, 1000); // Update every second
         }
 
+        function startForgotPasswordOTPCountdown() {
+            // Clear any existing interval
+            if (forgotPasswordOTPCountdownInterval) {
+                clearInterval(forgotPasswordOTPCountdownInterval);
+            }
+
+            // Disable the button and set the initial countdown text
+            $("#send-forgot-otp-btn").prop("disabled", true).text(`Resend OTP in ${forgotPasswordOTPCountdownTime}s`);
+
+            // Start the countdown
+            forgotPasswordOTPCountdownInterval = setInterval(() => {
+                forgotPasswordOTPCountdownTime--; // Decrease the countdown time
+                if (forgotPasswordOTPCountdownTime <= 0) {
+                    // Stop the countdown when time is up
+                    clearInterval(forgotPasswordOTPCountdownInterval);
+                    $("#send-forgot-otp-btn").prop("disabled", false).text("Send OTP");
+                    forgotPasswordOTPCountdownTime = 60; // Reset the countdown time
+                } else {
+                    // Update the button text with the remaining time
+                    $("#send-forgot-otp-btn").text(`Resend OTP in ${forgotPasswordOTPCountdownTime}s`);
+                }
+            }, 1000); // Update every second
+        }
+
         function sendOTP() {
             const email = $("#register-email").val().trim();
             if (!email) {
@@ -344,9 +372,15 @@
             const otp = $("#otp-input").val().trim();
             const username = $("#register-username").val().trim();
             const password = $("#register-password").val().trim();
+            const confirmPassword = $("#register-confirm-password").val().trim();
 
-            if (!email || !otp || !username || !password) {
+            if (!email || !otp || !username || !password || !confirmPassword) {
                 alert("All fields are required.");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Password and Confirm Password do not match.");
                 return;
             }
 
@@ -374,9 +408,15 @@
             const username = $("#register-username").val().trim();
             const email = $("#register-email").val().trim();
             const password = $("#register-password").val().trim();
+            const confirmPassword = $("#register-confirm-password").val().trim();
 
-            if (!username || !email || !password) {
+            if (!username || !email || !password || !confirmPassword) {
                 alert("All fields are required.");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Password and Confirm Password do not match.");
                 return;
             }
 
@@ -538,10 +578,16 @@
                     $("#forgot-otp").prop("disabled", false);
                     $("#reset-password-btn").prop("disabled", false);
                     $("#new-password").prop("disabled", false);
+                    $("#confirm-new-password").prop("disabled", false);
+
+                    // Start the countdown timer
+                    startForgotPasswordOTPCountdown();
                 } else {
                     alert("Failed to send OTP: " + response.message);
+                    $("#send-forgot-otp-btn").prop("disabled", false).text("Send OTP");
                 }
-            }, "json").always(() => {
+            }, "json").fail(() => {
+                alert("Failed to send OTP. Please try again.");
                 $("#send-forgot-otp-btn").prop("disabled", false).text("Send OTP");
             });
         }
@@ -550,9 +596,15 @@
             const email = $("#forgot-email").val().trim();
             const otp = $("#forgot-otp").val().trim();
             const newPassword = $("#new-password").val().trim();
+            const confirmNewPassword = $("#confirm-new-password").val().trim();
 
-            if (!email || !otp || !newPassword) {
+            if (!email || !otp || !newPassword || !confirmNewPassword) {
                 alert("All fields are required.");
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                alert("New Password and Confirm New Password do not match.");
                 return;
             }
 

@@ -257,7 +257,7 @@
     </div>
 
     <script>
-        const apiUrl = "https://script.google.com/macros/s/AKfycbzyJFU_-eFob-aptF_91M-S4dFOoRcfACfMUdEMLNEbJLwqswQRmmBi8GLn9zDbuOlvDA/exec";
+        const apiUrl = "https://script.google.com/macros/s/AKfycbxW00Yyo4xcRO2Pu_wbXcpeu6-qjmg9kIametsLITa5-bGo-jXBJY25xHFcqh7hBMXvzg/exec";
         let currentUsername = "";
         let lastSender = ""; // Track the last sender to hide the username for consecutive messages
         let otpCountdownInterval; // Variable to store the countdown interval
@@ -341,30 +341,57 @@
         }
 
         function sendOTP() {
-            const email = $("#register-email").val().trim();
-            if (!email) {
-                alert("Please enter your email.");
+            const email = $("#register-email").val().trim().toLowerCase(); // Ensure email is lowercase
+            const username = $("#register-username").val().trim().toLowerCase(); // Ensure username is lowercase
+
+            if (!email || !username) {
+                alert("Please enter your email and username.");
                 return;
             }
 
-            $("#send-otp-btn").prop("disabled", true).text("Sending OTP...");
+            // Validate email format
+            if (!validateEmail(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
 
-            $.post(apiUrl, { action: "sendOTP", email }, function(response) {
+            // Check if username is available
+            $("#send-otp-btn").prop("disabled", true).text("Checking username...");
+
+            $.post(apiUrl, { action: "checkUsername", username }, function(response) {
                 if (response.success) {
-                    alert("OTP sent to your email.");
-                    $("#otp-input").prop("disabled", false);
-                    $("#verify-otp-btn").prop("disabled", false);
+                    // Username is available, proceed to send OTP
+                    $("#send-otp-btn").text("Sending OTP...");
 
-                    // Start the countdown timer
-                    startOTPCountdown();
+                    $.post(apiUrl, { action: "sendOTP", email }, function(response) {
+                        if (response.success) {
+                            alert("OTP sent to your email.");
+                            $("#otp-input").prop("disabled", false);
+                            $("#verify-otp-btn").prop("disabled", false);
+
+                            // Start the countdown timer
+                            startOTPCountdown();
+                        } else {
+                            alert("Failed to send OTP: " + response.message);
+                            $("#send-otp-btn").prop("disabled", false).text("Send OTP");
+                        }
+                    }, "json").fail(() => {
+                        alert("Failed to send OTP. Please try again.");
+                        $("#send-otp-btn").prop("disabled", false).text("Send OTP");
+                    });
                 } else {
-                    alert("Failed to send OTP: " + response.message);
+                    alert("Username is already taken. Please choose another username.");
                     $("#send-otp-btn").prop("disabled", false).text("Send OTP");
                 }
             }, "json").fail(() => {
-                alert("Failed to send OTP. Please try again.");
+                alert("Failed to check username availability. Please try again.");
                 $("#send-otp-btn").prop("disabled", false).text("Send OTP");
             });
+        }
+
+        function validateEmail(email) {
+            const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+            return re.test(email);
         }
 
         function verifyOTP() {

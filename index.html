@@ -10,168 +10,249 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         /* General Styles */
-        body { 
-            background: linear-gradient(135deg, #667eea, #764ba2); /* Gradient background */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            width: 100%;
         }
-        .card { 
-            border-radius: 15px; /* Rounded corners */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow */
-            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+
+        /* Centering the login and register forms */
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          
+        }
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.9);
             width: 100%;
             max-width: 400px;
             padding: 2rem;
             margin: 1rem;
         }
+
         .card h2 {
-            color: #333; /* Dark text for headings */
+            color: #333;
             margin-bottom: 1.5rem;
             text-align: center;
         }
+
         .form-control {
-            border-radius: 25px; /* Rounded input fields */
+            border-radius: 25px;
             padding: 10px 20px;
-            border: 1px solid #ddd; /* Light border */
+            border: 1px solid #ddd;
             margin-bottom: 1rem;
         }
+
         .form-control:focus {
-            border-color: #667eea; /* Highlight border on focus */
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); /* Focus shadow */
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
         }
+
         .btn-primary, .btn-success {
-            border-radius: 25px; /* Rounded buttons */
+            border-radius: 25px;
             padding: 10px 20px;
             width: 100%;
             font-size: 1rem;
             font-weight: bold;
             transition: background-color 0.3s ease;
         }
+
         .btn-primary {
-            background-color: #667eea; /* Primary button color */
+            background-color: #667eea;
             border: none;
         }
+
         .btn-primary:hover {
-            background-color: #5a6fd1; /* Darker on hover */
+            background-color: #5a6fd1;
         }
+
         .btn-success {
-            background-color: #28a745; /* Success button color */
+            background-color: #28a745;
             border: none;
         }
+
         .btn-success:hover {
-            background-color: #218838; /* Darker on hover */
+            background-color: #218838;
         }
+
         .text-center a {
-            color: #667eea; /* Link color */
+            color: #667eea;
             text-decoration: none;
         }
+
         .text-center a:hover {
-            text-decoration: underline; /* Underline on hover */
+            text-decoration: underline;
+        }
+
+        /* OTP Input Group */
+        .otp-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .otp-input-group .form-control {
+            width: 100%;
+        }
+
+        .otp-input-group .btn {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .otp-input-group {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .otp-input-group .form-control {
+                flex: 1;
+            }
+
+            .otp-input-group .btn {
+                width: auto;
+            }
         }
 
         /* Chat Container Styles */
-        #chat-container { 
-            max-width: 100%; /* Full width */
-            margin: 0; /* Remove margin */
-            padding: 0; 
-            height: 100vh; /* Full height */
+        #chat-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
         }
-        #chat-messages { 
-            height: calc(100vh - 120px); /* Responsive height */
-            overflow-y: auto; 
-            padding: 15px 15px 80px; /* Add padding at the bottom to avoid input box overlap */
-            background-color: #ece5dd; /* WhatsApp chat background */
-            scroll-behavior: smooth; 
-            position: relative; 
+
+        #chat-header {
+            background-color: #667eea;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .message { 
-            padding: 8px 12px; 
-            margin: 5px 0; 
-            border-radius: 8px; 
-            max-width: 70%; 
-            word-wrap: break-word; 
-            position: relative; 
+
+        #chat-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
         }
-        .user-message { 
-            background-color: #dcf8c6; /* WhatsApp user message color */
-            margin-left: auto; 
-            text-align: right; 
+
+        #chat-messages {
+            width: 100%;
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #ece5dd;
+            scroll-behavior: smooth;
         }
-        .other-message { 
-            background-color: #fff; /* WhatsApp other message color */
-            margin-right: auto; 
-            text-align: left; 
+
+        .message {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
         }
+
+        .user-message {
+            background-color: #dcf8c6;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .other-message {
+            background-color: #fff;
+            margin-right: auto;
+            text-align: left;
+        }
+
         .message-time {
-            font-size: 0.75rem; 
-            color: #666; 
-            margin-top: 4px; 
-            display: block; 
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 4px;
+            display: block;
         }
+
         .message-username {
             font-size: 0.8rem;
             font-weight: bold;
             color: #333;
             margin-bottom: 4px;
         }
-        .input-group { 
-            background-color: #fff; 
-            padding: 10px; 
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            border-top: 1px solid #ddd; /* Add a border at the top */
+
+        .input-group {
+            background-color: #fff;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            align-items: center;
         }
-        #message-input { 
-            border: none; 
-            border-radius: 25px; 
-            padding: 10px 20px; 
-            background-color: #f1f1f1; 
-            width: calc(100% - 100px); /* Responsive input width */
+
+        #message-input {
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            background-color: #f1f1f1;
+            flex: 1;
+            margin-right: 10px;
         }
-        #send-btn { 
-            border: none; 
-            border-radius: 50%; 
-            background-color: #25d366; /* WhatsApp send button color */
-            color: white; 
-            width: 40px; 
-            height: 40px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
+
+        #send-btn {
+            border: none;
+            border-radius: 50%;
+            background-color: #25d366;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
-        #send-btn:disabled { 
-            background-color: #ccc; /* Disabled button color */
-            cursor: not-allowed; 
+
+        #send-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
-        #send-btn:hover:not(:disabled) { 
-            background-color: #128c7e; /* Darker green on hover */
+
+        #send-btn:hover:not(:disabled) {
+            background-color: #128c7e;
         }
+
         @media (max-width: 768px) {
-            #chat-messages {
-                height: calc(100vh - 100px); /* Adjust height for smaller screens */
-                padding-bottom: 70px; /* Adjust padding for smaller screens */
+            #chat-header h2 {
+                font-size: 1.2rem;
             }
+
+            .message {
+                max-width: 90%;
+            }
+
             #message-input {
-                width: calc(100% - 90px); /* Adjust input width for smaller screens */
+                padding: 8px 15px;
             }
+
             #send-btn {
-                width: 40px; /* Adjust button width for smaller screens */
+                width: 35px;
+                height: 35px;
             }
         }
     </style>
 </head>
 <body>
-
-    <div class="container-fluid">
+    <div class="center-container">
         <!-- Login Form -->
         <div id="login-container" class="card">
             <h2>Login</h2>
@@ -179,6 +260,7 @@
             <input type="password" id="login-password" class="form-control" placeholder="Password">
             <button id="login-btn" class="btn btn-primary" onclick="login()">Login</button>
             <p class="text-center mt-3">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+            <p class="text-center mt-2"><a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password?</a></p>
         </div>
 
         <!-- Register Form -->
@@ -187,30 +269,36 @@
             <input type="text" id="register-username" class="form-control" placeholder="Username">
             <input type="email" id="register-email" class="form-control" placeholder="Email">
             <input type="password" id="register-password" class="form-control" placeholder="Password">
-            <button id="register-btn" class="btn btn-success" onclick="registerUser()">Register</button>
+            <input type="password" id="register-confirm-password" class="form-control" placeholder="Confirm Password">
+            <div class="otp-input-group mt-2">
+                <input type="text" id="otp-input" class="form-control" placeholder="Enter OTP" disabled>
+                <button id="send-otp-btn" class="btn btn-primary" onclick="sendOTP()">Send OTP</button>
+            </div>
+            <button id="verify-otp-btn" class="btn btn-success mt-2" onclick="verifyOTP()" disabled>Verify OTP</button>
+            <button id="register-btn" class="btn btn-success mt-2 d-none" onclick="registerUser()">Register</button>
             <p class="text-center mt-3">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
         </div>
+    </div>
 
-        <!-- Chat Box -->
-        <div id="chat-container" class="card p-4 shadow-lg d-none">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>Live Chat</h2>
-                <button class="btn btn-danger" onclick="logout()">Logout</button>
-            </div>
-            <div id="chat-messages">
-                <div id="loading-message" class="text-center mt-3">
-                    <p>Please wait, your chat is loading...</p>
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+    <!-- Chat Box -->
+    <div id="chat-container" class="d-none">
+        <div id="chat-header">
+            <h2>Live Chat</h2>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+        <div id="chat-messages">
+            <div id="loading-message" class="text-center mt-3">
+                <p>Please wait, your chat is loading...</p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <div class="input-group">
-                <input type="text" id="message-input" class="form-control" placeholder="Type a message...">
-                <button id="send-btn" class="btn" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i> <!-- Send icon -->
-                </button>
-            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="message-input" class="form-control" placeholder="Type a message...">
+            <button id="send-btn" class="btn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
     </div>
 
@@ -228,13 +316,38 @@
         </div>
     </div>
 
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="email" id="forgot-email" class="form-control mb-3" placeholder="Enter your email">
+                    <div class="otp-input-group mb-3">
+                        <input type="text" id="forgot-otp" class="form-control" placeholder="Enter OTP" disabled>
+                        <button id="send-forgot-otp-btn" class="btn btn-primary" onclick="sendForgotOTP()">Send OTP</button>
+                    </div>
+                    <input type="password" id="new-password" class="form-control mb-3" placeholder="New Password" disabled>
+                    <input type="password" id="confirm-new-password" class="form-control mb-3" placeholder="Confirm New Password" disabled>
+                    <button id="reset-password-btn" class="btn btn-success w-100" onclick="resetPassword()" disabled>Reset Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const apiUrl = "https://script.google.com/macros/s/AKfycbyfcaOXJMrEXYxQtgISl9ZxfYh13uDCfezek1XQj7GO3dbMHk5rV1lQFgbAYrk1LzE_xQ/exec";
+        const apiUrl = "https://script.google.com/macros/s/AKfycbxW00Yyo4xcRO2Pu_wbXcpeu6-qjmg9kIametsLITa5-bGo-jXBJY25xHFcqh7hBMXvzg/exec";
         let currentUsername = "";
-        let lastSender = ""; // Track the last sender to hide the username for consecutive messages
+        let lastSender = "";
+        let otpCountdownInterval;
+        let otpCountdownTime = 60;
+        let forgotPasswordOTPCountdownInterval;
+        let forgotPasswordOTPCountdownTime = 60;
 
         $(document).ready(function() {
-            // Check if the user is already logged in
             const loggedIn = localStorage.getItem("loggedIn");
             const username = localStorage.getItem("username");
 
@@ -242,10 +355,7 @@
                 currentUsername = username;
                 $("#login-container").addClass("d-none");
                 $("#chat-container").removeClass("d-none");
-
-                // Show the loading message in the chat box
                 $("#loading-message").show();
-
                 startMessagePolling();
             }
         });
@@ -260,6 +370,163 @@
             $("#login-container").removeClass("d-none");
         }
 
+        function startOTPCountdown() {
+            if (otpCountdownInterval) {
+                clearInterval(otpCountdownInterval);
+            }
+            $("#send-otp-btn").prop("disabled", true).text(`Resend OTP in ${otpCountdownTime}s`);
+            otpCountdownInterval = setInterval(() => {
+                otpCountdownTime--;
+                if (otpCountdownTime <= 0) {
+                    clearInterval(otpCountdownInterval);
+                    $("#send-otp-btn").prop("disabled", false).text("Send OTP");
+                    otpCountdownTime = 60;
+                } else {
+                    $("#send-otp-btn").text(`Resend OTP in ${otpCountdownTime}s`);
+                }
+            }, 1000);
+        }
+
+        function startForgotPasswordOTPCountdown() {
+            if (forgotPasswordOTPCountdownInterval) {
+                clearInterval(forgotPasswordOTPCountdownInterval);
+            }
+            $("#send-forgot-otp-btn").prop("disabled", true).text(`Resend OTP in ${forgotPasswordOTPCountdownTime}s`);
+            forgotPasswordOTPCountdownInterval = setInterval(() => {
+                forgotPasswordOTPCountdownTime--;
+                if (forgotPasswordOTPCountdownTime <= 0) {
+                    clearInterval(forgotPasswordOTPCountdownInterval);
+                    $("#send-forgot-otp-btn").prop("disabled", false).text("Send OTP");
+                    forgotPasswordOTPCountdownTime = 60;
+                } else {
+                    $("#send-forgot-otp-btn").text(`Resend OTP in ${forgotPasswordOTPCountdownTime}s`);
+                }
+            }, 1000);
+        }
+
+        function sendOTP() {
+            const email = $("#register-email").val().trim().toLowerCase();
+            const username = $("#register-username").val().trim().toLowerCase();
+
+            if (!email || !username) {
+                alert("Please enter your email and username.");
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            $("#send-otp-btn").prop("disabled", true).text("Checking username...");
+
+            $.post(apiUrl, { action: "checkUsername", username }, function(response) {
+                if (response.success) {
+                    $("#send-otp-btn").text("Sending OTP...");
+
+                    $.post(apiUrl, { action: "sendOTP", email }, function(response) {
+                        if (response.success) {
+                            alert("OTP sent to your email.");
+                            $("#otp-input").prop("disabled", false);
+                            $("#verify-otp-btn").prop("disabled", false);
+                            startOTPCountdown();
+                        } else {
+                            alert("Failed to send OTP: " + response.message);
+                            $("#send-otp-btn").prop("disabled", false).text("Send OTP");
+                        }
+                    }, "json").fail(() => {
+                        alert("Failed to send OTP. Please try again.");
+                        $("#send-otp-btn").prop("disabled", false).text("Send OTP");
+                    });
+                } else {
+                    alert("Username is already taken. Please choose another username.");
+                    $("#send-otp-btn").prop("disabled", false).text("Send OTP");
+                }
+            }, "json").fail(() => {
+                alert("Failed to check username availability. Please try again.");
+                $("#send-otp-btn").prop("disabled", false).text("Send OTP");
+            });
+        }
+
+        function validateEmail(email) {
+            const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+            return re.test(email);
+        }
+
+        function verifyOTP() {
+            const email = $("#register-email").val().trim();
+            const otp = $("#otp-input").val().trim();
+            const username = $("#register-username").val().trim();
+            const password = $("#register-password").val().trim();
+            const confirmPassword = $("#register-confirm-password").val().trim();
+
+            if (!email || !otp || !username || !password || !confirmPassword) {
+                alert("All fields are required.");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Password and Confirm Password do not match.");
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                showPasswordFormatAlert();
+                return;
+            }
+
+            $("#verify-otp-btn").prop("disabled", true).text("Verifying OTP...");
+
+            $.post(apiUrl, { action: "verifyOTP", email, otp, username, password }, function(response) {
+                if (response.success) {
+                    alert("OTP verified. Registration successful!");
+                    $("#register-btn").removeClass("d-none");
+                    $("#verify-otp-btn").addClass("d-none");
+                } else {
+                    alert("OTP verification failed: " + response.message);
+                }
+            }, "json").always(() => {
+                $("#verify-otp-btn").prop("disabled", false).text("Verify OTP");
+            });
+        }
+
+        function registerUser() {
+            const username = $("#register-username").val().trim();
+            const email = $("#register-email").val().trim();
+            const password = $("#register-password").val().trim();
+            const confirmPassword = $("#register-confirm-password").val().trim();
+
+            if (!username || !email || !password || !confirmPassword) {
+                alert("All fields are required.");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Password and Confirm Password do not match.");
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                showPasswordFormatAlert();
+                return;
+            }
+
+            $("#register-btn").prop("disabled", true).text("Registering...");
+
+            $.post(apiUrl, { action: "register", username, email, password }, function(response) {
+                if (response.success) {
+                    alert("Registration successful! Redirecting to login page...");
+                    setTimeout(() => {
+                        showLogin();
+                    }, 2000);
+                } else {
+                    alert("Registration failed: " + response.message);
+                }
+            }, "json").always(() => {
+                $("#register-btn").prop("disabled", false).text("Register");
+            });
+        }
+
         function login() {
             const email = $("#login-email").val().trim();
             const password = $("#login-password").val().trim();
@@ -270,56 +537,26 @@
             }
 
             $("#login-btn").prop("disabled", true).text("Logging in...");
-            $("#loadingModal").modal("show"); // Show loading modal
+            $("#loadingModal").modal("show");
 
             $.post(apiUrl, { action: "login", email, password }, function(response) {
                 if (response.success) {
                     currentUsername = response.username;
-
-                    // Store login state in localStorage
                     localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("username", currentUsername);
-
                     $("#login-container").addClass("d-none");
                     $("#chat-container").removeClass("d-none");
-
-                    // Show the loading message in the chat box
                     $("#loading-message").show();
-
                     startMessagePolling();
                     setTimeout(() => {
-                        $("#loadingModal").modal("hide"); // Hide loading modal after 5 seconds
+                        $("#loadingModal").modal("hide");
                     }, 5000);
                 } else {
-                    alert("Login failed!");
-                    $("#loadingModal").modal("hide"); // Hide loading modal immediately
+                    showWrongPasswordAlert();
+                    $("#loadingModal").modal("hide");
                 }
             }, "json").always(() => {
                 $("#login-btn").prop("disabled", false).text("Login");
-            });
-        }
-
-        function registerUser() {
-            const username = $("#register-username").val().trim();
-            const email = $("#register-email").val().trim();
-            const password = $("#register-password").val().trim();
-
-            if (!username || !email || !password) {
-                alert("All fields are required!");
-                return;
-            }
-
-            $("#register-btn").prop("disabled", true).text("Registering...");
-
-            $.post(apiUrl, { action: "register", username, email, password }, function(response) {
-                if (response.success) {
-                    alert("Registered successfully!");
-                    showLogin();
-                } else {
-                    alert("Registration failed!");
-                }
-            }, "json").always(() => {
-                $("#register-btn").prop("disabled", false).text("Register");
             });
         }
 
@@ -327,20 +564,17 @@
             const message = $("#message-input").val().trim();
             if (!message) return;
 
-            // Disable input and send button
             $("#message-input").prop("disabled", true);
-            $("#send-btn").prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i>'); // Show loading spinner
+            $("#send-btn").prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i>');
 
             $.post(apiUrl, { action: "sendMessage", username: currentUsername, message }, function() {
-                // Re-enable input and send button
                 $("#message-input").prop("disabled", false);
-                $("#send-btn").prop("disabled", false).html('<i class="fas fa-paper-plane"></i>'); // Re-enable send button
-                $("#message-input").val(""); // Clear the input field
-                loadMessages(true); // Force scroll to bottom for sent messages
+                $("#send-btn").prop("disabled", false).html('<i class="fas fa-paper-plane"></i>');
+                $("#message-input").val("");
+                loadMessages(true);
             }).fail(() => {
-                // Re-enable input and send button on failure
                 $("#message-input").prop("disabled", false);
-                $("#send-btn").prop("disabled", false).html('<i class="fas fa-paper-plane"></i>'); // Re-enable send button
+                $("#send-btn").prop("disabled", false).html('<i class="fas fa-paper-plane"></i>');
                 alert("Failed to send message. Please try again.");
             });
         }
@@ -352,20 +586,16 @@
                 let chatBox = $("#chat-messages");
                 let isAtBottom = chatBox[0].scrollHeight - chatBox[0].scrollTop === chatBox[0].clientHeight;
 
-                // Hide the loading message
                 $("#loading-message").hide();
+                chatBox.empty();
 
-                chatBox.empty(); // Clear the chat box before appending new messages
-
-                // Append each message to the chat box
                 response.messages.forEach((msg, index) => {
                     let msgClass = msg.sender === currentUsername ? "user-message" : "other-message";
                     let messageText = msg.text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-                    let messageTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    let messageTime = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                    // Check if the current sender is the same as the previous sender
                     let showUsername = msg.sender !== lastSender;
-                    lastSender = msg.sender; // Update the last sender
+                    lastSender = msg.sender;
 
                     chatBox.append(`
                         <div class="message ${msgClass}">
@@ -376,13 +606,11 @@
                     `);
                 });
 
-                // Scroll to bottom if it's a sent message or if the user is already at the bottom
                 if (forceScroll || isAtBottom) {
                     scrollToBottom();
                 }
             }, "json").fail(() => {
                 console.error("Error fetching messages!");
-                // Show an error message if loading fails
                 $("#loading-message").html("<p class='text-danger'>Failed to load messages. Please try again.</p>");
             });
         }
@@ -393,18 +621,90 @@
         }
 
         function startMessagePolling() {
-            setInterval(() => loadMessages(), 3000); // Poll for new messages every 3 seconds
+            setInterval(() => loadMessages(), 3000);
         }
 
         function logout() {
-            // Clear login state from localStorage
             localStorage.removeItem("loggedIn");
             localStorage.removeItem("username");
-
-            // Reload the page to reset the app
             location.reload();
         }
-    </script>
 
+        function sendForgotOTP() {
+            const email = $("#forgot-email").val().trim();
+            if (!email) {
+                alert("Please enter your email.");
+                return;
+            }
+
+            $("#send-forgot-otp-btn").prop("disabled", true).text("Sending OTP...");
+
+            $.post(apiUrl, { action: "sendOTP", email }, function(response) {
+                if (response.success) {
+                    alert("OTP sent to your email.");
+                    $("#forgot-otp").prop("disabled", false);
+                    $("#reset-password-btn").prop("disabled", false);
+                    $("#new-password").prop("disabled", false);
+                    $("#confirm-new-password").prop("disabled", false);
+                    startForgotPasswordOTPCountdown();
+                } else {
+                    alert("Failed to send OTP: " + response.message);
+                    $("#send-forgot-otp-btn").prop("disabled", false).text("Send OTP");
+                }
+            }, "json").fail(() => {
+                alert("Failed to send OTP. Please try again.");
+                $("#send-forgot-otp-btn").prop("disabled", false).text("Send OTP");
+            });
+        }
+
+        function resetPassword() {
+            const email = $("#forgot-email").val().trim();
+            const otp = $("#forgot-otp").val().trim();
+            const newPassword = $("#new-password").val().trim();
+            const confirmNewPassword = $("#confirm-new-password").val().trim();
+
+            if (!email || !otp || !newPassword || !confirmNewPassword) {
+                alert("All fields are required.");
+                return;
+            }
+
+            if (newPassword !== confirmNewPassword) {
+                alert("New Password and Confirm New Password do not match.");
+                return;
+            }
+
+            if (!validatePassword(newPassword)) {
+                showPasswordFormatAlert();
+                return;
+            }
+
+            $("#reset-password-btn").prop("disabled", true).text("Resetting Password...");
+
+            $.post(apiUrl, { action: "resetPassword", email, otp, newPassword }, function(response) {
+                if (response.success) {
+                    alert("Password reset successful!");
+                    $("#forgotPasswordModal").modal("hide");
+                } else {
+                    alert("Password reset failed: " + response.message);
+                }
+            }, "json").always(() => {
+                $("#reset-password-btn").prop("disabled", false).text("Reset Password");
+            });
+        }
+
+        function validatePassword(password) {
+            const specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+            const numbers = /[0-9]+/;
+            return password.length >= 8 && specialChars.test(password) && numbers.test(password);
+        }
+
+        function showPasswordFormatAlert() {
+            alert("Password must contain at least 1 special character, 1 number, and be at least 8 characters long.");
+        }
+
+        function showWrongPasswordAlert() {
+            alert("Your password is wrong. Please enter the correct password.");
+        }
+    </script>
 </body>
 </html>
